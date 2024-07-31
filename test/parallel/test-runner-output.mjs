@@ -146,6 +146,7 @@ const tests = [
   },
   { name: 'test-runner/output/test-runner-plan.js' },
   process.features.inspector ? { name: 'test-runner/output/coverage_failure.js' } : false,
+  { name: 'test-runner/output/async-describe-filter-pattern.js' },
 ]
 .filter(Boolean)
 .map(({ name, tty, transform }) => ({
