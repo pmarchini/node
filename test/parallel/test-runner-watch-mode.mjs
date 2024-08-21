@@ -136,6 +136,8 @@ async function testWatch({
 
   const testCreate = async () => {
     await ran1.promise;
+    runs.push(currentRun);
+    currentRun = '';
     const newFilePath = tmpdir.resolve(fileToCreate);
     const interval = setInterval(
       () => writeFileSync(
