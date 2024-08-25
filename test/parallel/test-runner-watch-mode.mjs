@@ -57,7 +57,7 @@ async function testWatch({
   child.stdout.on('data', (data) => {
     stdout += data.toString();
     currentRun += data.toString();
-    const testRuns = stdout.match(/# duration_ms\s\d+/g);
+    const testRuns = stdout.match(/ duration_ms\s\d+/g);
     if (testRuns?.length >= 1) ran1.resolve();
     if (testRuns?.length >= 2) ran2.resolve();
   });
@@ -78,10 +78,10 @@ async function testWatch({
     assert.strictEqual(runs.length, 2);
 
     for (const run of runs) {
-      assert.match(run, /# tests 1/);
-      assert.match(run, /# pass 1/);
-      assert.match(run, /# fail 0/);
-      assert.match(run, /# cancelled 0/);
+      assert.match(run, / tests 1/);
+      assert.match(run, / pass 1/);
+      assert.match(run, / fail 0/);
+      assert.match(run, / cancelled 0/);
     }
   };
 
@@ -101,10 +101,10 @@ async function testWatch({
     assert.strictEqual(runs.length, 2);
 
     for (const run of runs) {
-      assert.match(run, /# tests 1/);
-      assert.match(run, /# pass 1/);
-      assert.match(run, /# fail 0/);
-      assert.match(run, /# cancelled 0/);
+      assert.match(run, / tests 1/);
+      assert.match(run, / pass 1/);
+      assert.match(run, / fail 0/);
+      assert.match(run, / cancelled 0/);
     }
   };
 
@@ -152,10 +152,10 @@ async function testWatch({
     await once(child, 'exit');
 
     for (const run of runs) {
-      assert.match(run, /# tests 1/);
-      assert.match(run, /# pass 1/);
-      assert.match(run, /# fail 0/);
-      assert.match(run, /# cancelled 0/);
+      assert.match(run, / tests 1/);
+      assert.match(run, / pass 1/);
+      assert.match(run, / fail 0/);
+      assert.match(run, / cancelled 0/);
     }
   };
 
