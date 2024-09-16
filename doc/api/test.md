@@ -1277,7 +1277,7 @@ changes:
     If `false`, it would only run one test file at a time.
     **Default:** `false`.
   * `cwd`: {string} Specifies the current working directory to be used by the test runner.
-    The cwd serves as the base path for resolving files according to the [test runner execution model][].
+    Serves as the base path for resolving files according to the [test runner execution model][].
     **Default:** `process.cwd()`.
   * `files`: {Array} An array containing the list of files to run.
     **Default** matching files from [test runner execution model][].
