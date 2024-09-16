@@ -1247,7 +1247,7 @@ added:
   - v16.19.0
 changes:
   - version: REPLACEME
-    pr-url: https://github.com/nodejs/node/pull/54225
+    pr-url: https://github.com/nodejs/node/pull/54705
     description: Added the `cwd` option.
   - version: v22.8.0
     pr-url: https://github.com/nodejs/node/pull/53927
