@@ -90,10 +90,12 @@ async function testWatch({
     currentRun = '';
     const fileToRenamePath = tmpdir.resolve(fileToUpdate);
     const newFileNamePath = tmpdir.resolve(`test-renamed-${fileToUpdate}`);
-    const interval = setInterval(() => renameSync(fileToRenamePath, newFileNamePath), common.platformTimeout(1000));
+    const interval = setInterval(() => {
+      renameSync(fileToRenamePath, newFileNamePath)
+      clearInterval(interval);
+    }, common.platformTimeout(1000));
     await ran2.promise;
     runs.push(currentRun);
-    clearInterval(interval);
     child.kill();
     await once(child, 'exit');
 
@@ -117,11 +119,11 @@ async function testWatch({
         unlinkSync(fileToDeletePath);
       } else {
         ran2.resolve();
+        clearInterval(interval);
       }
-    }, common.platformTimeout(1000));
+    }, common.platformTimeout(2000));
     await ran2.promise;
     runs.push(currentRun);
-    clearInterval(interval);
     child.kill();
     await once(child, 'exit');
 
