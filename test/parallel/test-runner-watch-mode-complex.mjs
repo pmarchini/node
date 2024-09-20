@@ -3,7 +3,7 @@ import * as common from '../common/index.mjs';
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { spawn } from 'node:child_process';
-import { writeFileSync, unlinkSync } from 'node:fs';
+import { writeFile, unlink } from 'node:fs/promises';
 import util from 'internal/util';
 import tmpdir from '../common/tmpdir.js';
 
@@ -46,8 +46,12 @@ test('test to delete has ran');`,
 const fixturePaths = Object.fromEntries(Object.keys(fixtureContent)
   .map((file) => [file, tmpdir.resolve(file)]));
 
-Object.entries(fixtureContent)
-  .forEach(([file, content]) => writeFileSync(fixturePaths[file], content));
+async function setupFixtures() {
+  await Promise.all(Object.entries(fixtureContent)
+    .map(([file, content]) => writeFile(fixturePaths[file], content)));
+}
+
+await setupFixtures();
 
 describe('test runner watch mode with more complex setup', () => {
   it('should run tests when a dependency changed after a watched test file being deleted', async () => {
@@ -76,14 +80,14 @@ describe('test runner watch mode with more complex setup', () => {
     runs.push(currentRun);
     currentRun = '';
     const fileToDeletePathLocal = tmpdir.resolve('test-to-delete.mjs');
-    await new Promise((resolve) => setTimeout(() => {
-      unlinkSync(fileToDeletePathLocal);
+    await new Promise((resolve) => setTimeout(async () => {
+      await unlink(fileToDeletePathLocal);
       resolve();
     }, common.platformTimeout(1000)));
 
     const content = fixtureContent['dependency.mjs'];
     const path = fixturePaths['dependency.mjs'];
-    setTimeout(() => writeFileSync(path, content), common.platformTimeout(1000));
+    setTimeout(async () => await writeFile(path, content), common.platformTimeout(1000));
     await ran2.promise;
     runs.push(currentRun);
     currentRun = '';
