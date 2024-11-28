@@ -25,19 +25,18 @@ function getTapCoverageFixtureReport() {
 
   const report = [
     '# start of coverage report',
-    '# --------------------------------------------------------------------------------------------',
+    '# ------------------------------------------------------------------',
     '# file              | line % | branch % | funcs % | uncovered lines',
-    '# --------------------------------------------------------------------------------------------',
+    '# ------------------------------------------------------------------',
     '# test              |        |          |         | ',
     '#  fixtures         |        |          |         | ',
     '#   test-runner     |        |          |         | ',
-    '#    coverage.js    |  78.65 |    38.46 |   60.00 | 12-13 16-22 27 39 43-44 61-62 66-67 71-72',
     '#    invalid-tap.js | 100.00 |   100.00 |  100.00 | ',
     '#   v8-coverage     |        |          |         | ',
     '#    throw.js       |  71.43 |    50.00 |  100.00 | 5-6',
-    '# --------------------------------------------------------------------------------------------',
-    '# all files         |  78.35 |    43.75 |   60.00 | ',
-    '# --------------------------------------------------------------------------------------------',
+    '# ------------------------------------------------------------------',
+    '# all files         |  75.00 |    66.67 |  100.00 | ',
+    '# ------------------------------------------------------------------',
     '# end of coverage report',
   ].join('\n');
 
@@ -53,19 +52,18 @@ function getSpecCoverageFixtureReport() {
 
   const report = [
     '\u2139 start of coverage report',
-    '\u2139 --------------------------------------------------------------------------------------------',
+    '\u2139 ------------------------------------------------------------------',
     '\u2139 file              | line % | branch % | funcs % | uncovered lines',
-    '\u2139 --------------------------------------------------------------------------------------------',
+    '\u2139 ------------------------------------------------------------------',
     '\u2139 test              |        |          |         | ',
     '\u2139  fixtures         |        |          |         | ',
     '\u2139   test-runner     |        |          |         | ',
-    '\u2139    coverage.js    |  78.65 |    38.46 |   60.00 | 12-13 16-22 27 39 43-44 61-62 66-67 71-72',
     '\u2139    invalid-tap.js | 100.00 |   100.00 |  100.00 | ',
     '\u2139   v8-coverage     |        |          |         | ',
     '\u2139    throw.js       |  71.43 |    50.00 |  100.00 | 5-6',
-    '\u2139 --------------------------------------------------------------------------------------------',
-    '\u2139 all files         |  78.35 |    43.75 |   60.00 | ',
-    '\u2139 --------------------------------------------------------------------------------------------',
+    '\u2139 ------------------------------------------------------------------',
+    '\u2139 all files         |  75.00 |    66.67 |  100.00 | ',
+    '\u2139 ------------------------------------------------------------------',
     '\u2139 end of coverage report',
   ].join('\n');
 
@@ -164,18 +162,16 @@ test('single process coverage is the same with --test', skipIfNoInspector, () =>
 test('coverage is combined for multiple processes', skipIfNoInspector, () => {
   let report = [
     '# start of coverage report',
-    '# -------------------------------------------------------------------',
-    '# file           | line % | branch % | funcs % | uncovered lines',
-    '# -------------------------------------------------------------------',
-    '# common.js      |  89.86 |    62.50 |  100.00 | 8 13-14 18 34-35 53',
-    '# first.test.js  |  83.33 |   100.00 |   50.00 | 5-6',
-    '# second.test.js | 100.00 |   100.00 |  100.00 | ',
-    '# third.test.js  | 100.00 |   100.00 |  100.00 | ',
-    '# -------------------------------------------------------------------',
-    '# all files      |  92.11 |    72.73 |   88.89 | ',
-    '# -------------------------------------------------------------------',
+    '# --------------------------------------------------------------',
+    '# file      | line % | branch % | funcs % | uncovered lines',
+    '# --------------------------------------------------------------',
+    '# common.js |  89.86 |    62.50 |  100.00 | 8 13-14 18 34-35 53',
+    '# --------------------------------------------------------------',
+    '# all files |  89.86 |    62.50 |  100.00 | ',
+    '# --------------------------------------------------------------',
     '# end of coverage report',
   ].join('\n');
+
 
   if (common.isWindows) {
     report = report.replaceAll('/', '\\');
@@ -195,6 +191,7 @@ test('coverage is combined for multiple processes', skipIfNoInspector, () => {
   assert.strictEqual(result.status, 0);
 });
 
+// TODO(pmarchini): is this skip still needed?
 test.skip('coverage works with isolation=none', skipIfNoInspector, () => {
   // There is a bug in coverage calculation. The branch % in the common.js
   // fixture is different depending on the test isolation mode. The 'none' mode
@@ -236,9 +233,14 @@ test.skip('coverage works with isolation=none', skipIfNoInspector, () => {
 test('coverage reports on lines, functions, and branches', skipIfNoInspector, async (t) => {
   const fixture = fixtures.path('test-runner', 'coverage.js');
   const child = spawnSync(process.execPath,
-                          ['--test', '--experimental-test-coverage', '--test-reporter',
-                           fixtures.fileURL('test-runner/custom_reporters/coverage.mjs'),
-                           fixture]);
+                          [
+                            '--test',
+                            '--experimental-test-coverage',
+                            '--test-reporter',
+                            fixtures.fileURL('test-runner/custom_reporters/coverage.mjs'),
+                            '--test-coverage-include=**', // Including also test file in the coverage report
+                            fixture,
+                          ]);
   assert.strictEqual(child.stderr.toString(), '');
   const stdout = child.stdout.toString();
   const coverage = JSON.parse(stdout);
@@ -297,7 +299,6 @@ test('coverage with ESM hook - source irrelevant', skipIfNoInspector, () => {
     '# ------------------------------------------------------------------',
     '# hooks.mjs         | 100.00 |   100.00 |  100.00 | ',
     '# register-hooks.js | 100.00 |   100.00 |  100.00 | ',
-    '# virtual.js        | 100.00 |   100.00 |  100.00 | ',
     '# ------------------------------------------------------------------',
     '# all files         | 100.00 |   100.00 |  100.00 | ',
     '# ------------------------------------------------------------------',
@@ -310,7 +311,13 @@ test('coverage with ESM hook - source irrelevant', skipIfNoInspector, () => {
 
   const fixture = fixtures.path('test-runner', 'coverage-loader');
   const args = [
-    '--import', './register-hooks.js', '--test', '--experimental-test-coverage', '--test-reporter', 'tap', 'virtual.js',
+    '--import',
+    './register-hooks.js',
+    '--test',
+    '--experimental-test-coverage',
+    '--test-reporter',
+    'tap',
+    'virtual.js',
   ];
   const result = spawnSync(process.execPath, args, { cwd: fixture });
 
@@ -327,7 +334,6 @@ test('coverage with ESM hook - source transpiled', skipIfNoInspector, () => {
     '# ------------------------------------------------------------------',
     '# hooks.mjs         | 100.00 |   100.00 |  100.00 | ',
     '# register-hooks.js | 100.00 |   100.00 |  100.00 | ',
-    '# sum.test.ts       | 100.00 |   100.00 |  100.00 | ',
     '# sum.ts            | 100.00 |   100.00 |  100.00 | ',
     '# ------------------------------------------------------------------',
     '# all files         | 100.00 |   100.00 |  100.00 | ',
@@ -360,21 +366,18 @@ test('coverage with excluded files', skipIfNoInspector, () => {
   const result = spawnSync(process.execPath, args);
   const report = [
     '# start of coverage report',
-    '# -----------------------------------------------------------------------------------------',
+    '# ---------------------------------------------------------------',
     '# file           | line % | branch % | funcs % | uncovered lines',
-    '# -----------------------------------------------------------------------------------------',
+    '# ---------------------------------------------------------------',
     '# test           |        |          |         | ',
     '#  fixtures      |        |          |         | ',
-    '#   test-runner  |        |          |         | ',
-    '#    coverage.js |  78.65 |    38.46 |   60.00 | 12-13 16-22 27 39 43-44 61-62 66-67 71-72',
     '#   v8-coverage  |        |          |         | ',
     '#    throw.js    |  71.43 |    50.00 |  100.00 | 5-6',
-    '# -----------------------------------------------------------------------------------------',
-    '# all files      |  78.13 |    40.00 |   60.00 | ',
-    '# -----------------------------------------------------------------------------------------',
+    '# ---------------------------------------------------------------',
+    '# all files      |  71.43 |    50.00 |  100.00 | ',
+    '# ---------------------------------------------------------------',
     '# end of coverage report',
   ].join('\n');
-
 
   if (common.isWindows) {
     return report.replaceAll('/', '\\');
@@ -425,7 +428,7 @@ test('coverage with included and excluded files', skipIfNoInspector, () => {
   const fixture = fixtures.path('test-runner', 'coverage.js');
   const args = [
     '--experimental-test-coverage', '--test-reporter', 'tap',
-    '--test-coverage-include=test/fixtures/test-runner/*.js',
+    '--test-coverage-include=test/fixtures/test-runner/!(*-tap).js',
     '--test-coverage-exclude=test/fixtures/test-runner/*-tap.js',
     fixture,
   ];
@@ -458,27 +461,31 @@ test('coverage with included and excluded files', skipIfNoInspector, () => {
 test('correctly prints the coverage report of files contained in parent directories', skipIfNoInspector, () => {
   let report = [
     '# start of coverage report',
-    '# --------------------------------------------------------------------------------------------',
+    '# ------------------------------------------------------------------',
     '# file              | line % | branch % | funcs % | uncovered lines',
-    '# --------------------------------------------------------------------------------------------',
+    '# ------------------------------------------------------------------',
     '# ..                |        |          |         | ',
-    '#  coverage.js      |  78.65 |    38.46 |   60.00 | 12-13 16-22 27 39 43-44 61-62 66-67 71-72',
     '#  invalid-tap.js   | 100.00 |   100.00 |  100.00 | ',
     '#  ..               |        |          |         | ',
     '#   v8-coverage     |        |          |         | ',
     '#    throw.js       |  71.43 |    50.00 |  100.00 | 5-6',
-    '# --------------------------------------------------------------------------------------------',
-    '# all files         |  78.35 |    43.75 |   60.00 | ',
-    '# --------------------------------------------------------------------------------------------',
+    '# ------------------------------------------------------------------',
+    '# all files         |  75.00 |    66.67 |  100.00 | ',
+    '# ------------------------------------------------------------------',
     '# end of coverage report',
   ].join('\n');
+
 
   if (common.isWindows) {
     report = report.replaceAll('/', '\\');
   }
   const fixture = fixtures.path('test-runner', 'coverage.js');
   const args = [
-    '--test', '--experimental-test-coverage', '--test-reporter', 'tap', fixture,
+    '--test',
+    '--experimental-test-coverage',
+    '--test-reporter',
+    'tap',
+    fixture,
   ];
   const result = spawnSync(process.execPath, args, {
     env: { ...process.env, NODE_TEST_TMPDIR: tmpdir.path },
@@ -488,4 +495,72 @@ test('correctly prints the coverage report of files contained in parent director
   assert.strictEqual(result.stderr.toString(), '');
   assert(result.stdout.toString().includes(report));
   assert.strictEqual(result.status, 0);
+});
+
+test('coverage should not include test files by default - lazyBootstrap', skipIfNoInspector, () => {
+  const fixture = fixtures.path('test-runner', 'coverage.js');
+  const args = [
+    '--experimental-test-coverage', '--test-reporter', 'tap',
+    fixture,
+  ];
+  const result = spawnSync(process.execPath, args);
+  const report = [
+    '# start of coverage report',
+    '# ------------------------------------------------------------------',
+    '# file              | line % | branch % | funcs % | uncovered lines',
+    '# ------------------------------------------------------------------',
+    '# test              |        |          |         | ',
+    '#  fixtures         |        |          |         | ',
+    '#   test-runner     |        |          |         | ',
+    '#    invalid-tap.js | 100.00 |   100.00 |  100.00 | ',
+    '#   v8-coverage     |        |          |         | ',
+    '#    throw.js       |  71.43 |    50.00 |  100.00 | 5-6',
+    '# ------------------------------------------------------------------',
+    '# all files         |  75.00 |    66.67 |  100.00 | ',
+    '# ------------------------------------------------------------------',
+    '# end of coverage report',
+  ].join('\n');
+
+
+  if (common.isWindows) {
+    return report.replaceAll('/', '\\');
+  }
+
+  assert(result.stdout.toString().includes(report));
+  assert.strictEqual(result.status, 0);
+  assert(!findCoverageFileForPid(result.pid));
+});
+
+test('coverage should not include test files by default', skipIfNoInspector, () => {
+  const fixture = fixtures.path('test-runner', 'coverage.js');
+  const args = [
+    '--test', '--experimental-test-coverage', '--test-reporter', 'tap',
+    fixture,
+  ];
+  const result = spawnSync(process.execPath, args);
+  const report = [
+    '# start of coverage report',
+    '# ------------------------------------------------------------------',
+    '# file              | line % | branch % | funcs % | uncovered lines',
+    '# ------------------------------------------------------------------',
+    '# test              |        |          |         | ',
+    '#  fixtures         |        |          |         | ',
+    '#   test-runner     |        |          |         | ',
+    '#    invalid-tap.js | 100.00 |   100.00 |  100.00 | ',
+    '#   v8-coverage     |        |          |         | ',
+    '#    throw.js       |  71.43 |    50.00 |  100.00 | 5-6',
+    '# ------------------------------------------------------------------',
+    '# all files         |  75.00 |    66.67 |  100.00 | ',
+    '# ------------------------------------------------------------------',
+    '# end of coverage report',
+  ].join('\n');
+
+
+  if (common.isWindows) {
+    return report.replaceAll('/', '\\');
+  }
+
+  assert(result.stdout.toString().includes(report));
+  assert.strictEqual(result.status, 0);
+  assert(!findCoverageFileForPid(result.pid));
 });

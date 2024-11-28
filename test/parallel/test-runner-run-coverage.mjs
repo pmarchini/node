@@ -139,7 +139,7 @@ describe('require(\'node:test\').run coverage settings', { concurrency: true }, 
       const stream = run({
         files: [...files, fixtures.path('test-runner/invalid-tap.js')],
         coverage: true,
-        coverageIncludeGlobs: ['test/fixtures/test-runner/*.js'],
+        coverageIncludeGlobs: ['test/fixtures/test-runner/!(*-tap).js'],
         coverageExcludeGlobs: ['test/fixtures/test-runner/*-tap.js']
       });
       stream.on('test:fail', common.mustNotCall());
@@ -157,7 +157,12 @@ describe('require(\'node:test\').run coverage settings', { concurrency: true }, 
       const thresholdErrors = [];
       const originalExitCode = process.exitCode;
       assert.notStrictEqual(originalExitCode, 1);
-      const stream = run({ files, coverage: true, lineCoverage: 99, branchCoverage: 99, functionCoverage: 99 });
+      const stream = run({ files,
+                           coverage: true,
+                           lineCoverage: 99,
+                           branchCoverage: 99,
+                           functionCoverage: 99,
+                           coverageIncludeGlobs: ['**'] });
       stream.on('test:fail', common.mustNotCall());
       stream.on('test:pass', common.mustCall(1));
       stream.on('test:diagnostic', ({ message }) => {

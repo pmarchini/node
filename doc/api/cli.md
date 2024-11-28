@@ -2290,6 +2290,7 @@ This option may be specified multiple times to exclude multiple glob patterns.
 
 If both `--test-coverage-exclude` and `--test-coverage-include` are provided,
 files must meet **both** criteria to be included in the coverage report.
+However, if there is an overlap between the two, `--test-coverage-include` takes precedence.
 
 ### `--test-coverage-functions=threshold`
 
@@ -2318,6 +2319,10 @@ This option may be specified multiple times to include multiple glob patterns.
 
 If both `--test-coverage-exclude` and `--test-coverage-include` are provided,
 files must meet **both** criteria to be included in the coverage report.
+However, if there is an overlap between the two, `--test-coverage-include` takes precedence.
+
+By default, the test files are excluded from code coverage. They can be explicitly
+included via this flag.
 
 ### `--test-coverage-lines=threshold`
 
