@@ -1341,16 +1341,16 @@ changes:
   * `coverageExcludeGlobs` {string|Array} Excludes specific files from code coverage
     using a glob pattern, which can match both absolute and relative file paths.
     This property is only applicable when `coverage` was set to `true`.
-    If both `--test-coverage-exclude` and `--test-coverage-include` are provided,
+    If both `coverageExcludeGlobs` and `coverageIncludeGlobs` are provided,
     files must meet **both** criteria to be included in the coverage report.
-    However, if there is an overlap between the two, `--test-coverage-include` takes precedence.
+    However, if there is an overlap between the two `coverageIncludeGlobs` takes precedence.
     **Default:** `undefined`.
   * `coverageIncludeGlobs` {string|Array} Includes specific files in code coverage
     using a glob pattern, which can match both absolute and relative file paths.
     This property is only applicable when `coverage` was set to `true`.
-    If both `--test-coverage-exclude` and `--test-coverage-include` are provided,
+    If both `coverageExcludeGlobs` and `coverageIncludeGlobs` are provided,
     files must meet **both** criteria to be included in the coverage report.
-    However, if there is an overlap between the two, `--test-coverage-include` takes precedence.
+    However, if there is an overlap between the two `coverageIncludeGlobs` takes precedence.
     By default, the test files are excluded from code coverage. They can be explicitly
     included via this flag.
     **Default:** `undefined`.
