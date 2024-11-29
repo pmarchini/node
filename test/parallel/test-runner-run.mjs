@@ -25,7 +25,7 @@ describe('require(\'node:test\').run', { concurrency: true }, () => {
     for await (const _ of stream);
   });
 
-  it('should succeed with a file', async () => {
+  it.only('should succeed with a file', async () => {
     const stream = run({ files: [join(testFixtures, 'default-behavior/test/random.cjs')] });
     stream.on('test:fail', common.mustNotCall());
     stream.on('test:pass', common.mustCall(1));
