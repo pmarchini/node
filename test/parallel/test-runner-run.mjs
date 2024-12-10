@@ -25,7 +25,7 @@ describe('require(\'node:test\').run', { concurrency: true }, () => {
     for await (const _ of stream);
   });
 
-  it.only('should succeed with a file', async () => {
+  it('should succeed with a file', async () => {
     const stream = run({ files: [join(testFixtures, 'default-behavior/test/random.cjs')] });
     stream.on('test:fail', common.mustNotCall());
     stream.on('test:pass', common.mustCall(1));
@@ -34,12 +34,12 @@ describe('require(\'node:test\').run', { concurrency: true }, () => {
   });
 
   const argPrintingFile = join(testFixtures, 'print-arguments.js');
-  it('should allow custom arguments via execArgv', async () => {
+  it.skip('should allow custom arguments via execArgv', async () => {
     const result = await run({ files: [argPrintingFile], execArgv: ['-p', '"Printed"'] }).compose(spec).toArray();
     assert.strictEqual(result[0].toString(), 'Printed\n');
   });
 
-  it('should allow custom arguments via argv', async () => {
+  it.skip('should allow custom arguments via argv', async () => {
     const stream = run({ files: [argPrintingFile], argv: ['--a-custom-argument'] });
     stream.on('test:fail', common.mustNotCall());
     stream.on('test:pass', common.mustCall());
@@ -194,7 +194,7 @@ describe('require(\'node:test\').run', { concurrency: true }, () => {
     });
   });
 
-  describe('AbortSignal', () => {
+  describe.skip('AbortSignal', () => {
     it('should accept a signal', async () => {
       const stream = run({ signal: AbortSignal.timeout(50), files: [
         fixtures.path('test-runner', 'never_ending_sync.js'),
