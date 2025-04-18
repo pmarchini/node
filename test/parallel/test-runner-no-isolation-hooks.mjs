@@ -68,3 +68,27 @@ test('use --import (ESM) to define global hooks', async (t) => {
 
   t.assert.equal(testHookOutput, order);
 });
+
+test('use --import (CJS) to define global hooks', async (t) => {
+  const { stdout } = await common.spawnPromisified(process.execPath, [
+    ...testArguments,
+    '--import', fixtures.fileURL('test-runner', 'no-isolation', 'global-hooks.cjs'),
+    ...testFiles,
+  ]);
+
+  const testHookOutput = stdout.split('\n▶')[0];
+
+  t.assert.equal(testHookOutput, order);
+});
+
+test('use --import (ESM) to define global hooks', async (t) => {
+  const { stdout } = await common.spawnPromisified(process.execPath, [
+    ...testArguments,
+    '--import', fixtures.fileURL('test-runner', 'no-isolation', 'global-hooks.mjs'),
+    ...testFiles,
+  ]);
+
+  const testHookOutput = stdout.split('\n▶')[0];
+
+  t.assert.equal(testHookOutput, order);
+});
