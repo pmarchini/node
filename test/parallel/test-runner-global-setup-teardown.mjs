@@ -111,6 +111,7 @@ async function runTest(
       assert.match(stdout, /fail 0/);
       assert.match(stdout, /Global setup executed/);
       assert.match(stdout, /Global teardown executed/);
+      assert.match(stdout, /Data from setup: data from setup/);
       assert.strictEqual(stderr.length, 0);
 
       // After all tests complete, the teardown should have run
@@ -203,8 +204,30 @@ async function runTest(
       assert.strictEqual(content, 'Teardown-only was executed');
     });
 
-    // TODO(pmarchini): We should be able to share context between setup and teardown
-    it.todo('should share context between setup and teardown');
+    it('should share context between setup and teardown', async () => {
+      const contextFlagPath = tmpdir.resolve('context-shared.tmp');
+      const setupFlagPath = tmpdir.resolve('setup-for-context.tmp');
+
+      // Create a setup file for test-file.js to find
+      fs.writeFileSync(setupFlagPath, 'Setup was executed');
+
+      await runTest({
+        isolation,
+        globalSetupFile: 'context-sharing.js',
+        env: {
+          CONTEXT_FLAG_PATH: contextFlagPath,
+          SETUP_FLAG_PATH: setupFlagPath
+        },
+        runnerEnabled
+      });
+
+      assert.ok(fs.existsSync(contextFlagPath), 'Context sharing flag file should exist');
+      const contextData = JSON.parse(fs.readFileSync(contextFlagPath, 'utf8'));
+
+      assert.strictEqual(typeof contextData.timestamp, 'number');
+      assert.strictEqual(contextData.message, 'Hello from setup');
+      assert.deepStrictEqual(contextData.complexData, { key: 'value', nested: { data: true } });
+    });
 
     it('should handle async setup and teardown', async () => {
       const asyncFlagPath = tmpdir.resolve('async-executed.tmp');
@@ -275,6 +298,7 @@ async function runTest(
       assert.match(stdout, /fail 0/);
       assert.match(stdout, /Global setup executed/);
       assert.match(stdout, /Global teardown executed/);
+      assert.match(stdout, /Data from setup: data from setup/);
       assert.strictEqual(stderr.length, 0);
 
       // After all tests complete, the teardown should have run
@@ -304,6 +328,7 @@ async function runTest(
       assert.match(stdout, /fail 0/);
       assert.match(stdout, /Global setup executed/);
       assert.match(stdout, /Global teardown executed/);
+      assert.match(stdout, /Data from setup: data from setup/);
       assert.strictEqual(stderr.length, 0);
 
       // After all tests complete, the teardown should have run
@@ -548,6 +573,7 @@ async function runTest(
         assert.match(stdout, /verify setup was executed/);
         assert.match(stdout, /another simple test/);
         assert.match(stdout, /Global teardown executed/);
+        assert.match(stdout, /Data from setup: data from setup/);
         assert.match(stdout, /tests 4/);
         assert.match(stdout, /suites 0/);
         assert.match(stdout, /pass 3/);
