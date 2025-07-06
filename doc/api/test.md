@@ -1847,6 +1847,111 @@ added:
 Defines a new assertion function with the provided name and function. If an
 assertion already exists with the same name, it is overwritten.
 
+## `colors`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+An object whose methods are used to configure custom color schemes for test
+runners and coverage reports. The methods allow customizing the colors used
+for different types of test results and coverage thresholds.
+
+It is possible to apply the same color configuration to all files by placing
+common configuration code in a module preloaded with `--require` or `--import`.
+
+### `colors.registerCoverageColor(name, color)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `name` {string} The coverage color name. Valid values are `'high'`, `'medium'`, and `'low'`.
+* `color` {string} The ANSI color code to use for the coverage level.
+
+Defines a custom color for coverage reporting. Coverage colors are used to
+highlight coverage percentages in the coverage report based on thresholds:
+- `'high'`: Used for coverage > 90%
+- `'medium'`: Used for coverage between 50% and 90%
+- `'low'`: Used for coverage < 50%
+
+```js
+import { colors } from 'node:test';
+
+// Set custom colors for coverage reporting
+colors.registerCoverageColor('high', '\u001b[92m'); // bright green
+colors.registerCoverageColor('medium', '\u001b[93m'); // bright yellow
+colors.registerCoverageColor('low', '\u001b[91m'); // bright red
+```
+
+### `colors.registerReporterColor(name, color)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `name` {string} The reporter color name. Valid values include `'test:pass'`, `'test:fail'`, `'test:diagnostic'`, `'info'`, `'warn'`, and `'error'`.
+* `color` {string} The ANSI color code to use for the reporter element.
+
+Defines a custom color for test reporter output. Reporter colors are used to
+highlight different types of test results and diagnostic messages.
+
+```js
+import { colors } from 'node:test';
+
+// Set custom colors for test reporter
+colors.registerReporterColor('test:pass', '\u001b[96m'); // bright cyan
+colors.registerReporterColor('test:fail', '\u001b[95m'); // bright magenta
+colors.registerReporterColor('test:diagnostic', '\u001b[94m'); // bright blue
+```
+
+### `colors.registerCoverageColorSchema(schema)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `schema` {Object} An object containing coverage color mappings.
+
+Defines multiple coverage colors at once using a schema object. This is
+convenient when you want to set up a complete color scheme.
+
+```js
+import { colors } from 'node:test';
+
+// Set a complete coverage color schema
+colors.registerCoverageColorSchema({
+  high: '\u001b[38;5;46m',   // 256-color bright green
+  medium: '\u001b[38;5;226m', // 256-color bright yellow
+  low: '\u001b[38;5;196m',   // 256-color bright red
+});
+```
+
+### `colors.registerReporterColorSchema(schema)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `schema` {Object} An object containing reporter color mappings.
+
+Defines multiple reporter colors at once using a schema object. This is
+convenient when you want to set up a complete color scheme for test output.
+
+```js
+import { colors } from 'node:test';
+
+// Set a complete reporter color schema
+colors.registerReporterColorSchema({
+  'test:pass': '\u001b[38;5;82m',   // 256-color bright green
+  'test:fail': '\u001b[38;5;196m',  // 256-color bright red
+  'test:diagnostic': '\u001b[38;5;33m', // 256-color bright blue
+  'info': '\u001b[38;5;39m',        // 256-color bright cyan
+  'warn': '\u001b[38;5;214m',       // 256-color bright orange
+  'error': '\u001b[38;5;196m',      // 256-color bright red
+});
+```
+
 ## `snapshot`
 
 <!-- YAML
