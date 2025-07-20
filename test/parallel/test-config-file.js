@@ -83,6 +83,24 @@ test('should throw an error when a flag is declared twice', async () => {
   strictEqual(result.code, 9);
 });
 
+test.todo('should merge config file options with NODE_OPTIONS', async () => {
+  const result = await spawnPromisified(process.execPath, [
+    '--expose-internals',
+    '--experimental-config-file',
+    fixtures.path('rc/merge-test.json'),
+    '-p', 'require("internal/options").getOptionValue("--secure-heap")',
+  ], {
+    env: {
+      ...process.env,
+      NODE_OPTIONS: '--max-http-header-size=2000 --no-warnings',
+    },
+  });
+
+  strictEqual(result.stderr, '');
+  strictEqual(result.stdout, '8\n');
+  strictEqual(result.code, 0);
+});
+
 
 test('should override env-file', async () => {
   const result = await spawnPromisified(process.execPath, [

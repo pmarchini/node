@@ -1,0 +1,6 @@
+{
+  "nodeOptions": {
+    "max-http-header-size": 1000,
+    "secure-heap": 8
+  }
+}
