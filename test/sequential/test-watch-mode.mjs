@@ -791,4 +791,89 @@ process.on('message', (message) => {
       `Completed running ${inspect(file)}. Waiting for file changes before restarting...`,
     ]);
   });
+
+  // TODO(pmarchini): These tests are failing due to "--watch requires specifying a file" error
+  describe('failing integrations', () => {
+    it.todo('should watch changes when enabled via node.config.json', async () => {
+      const configFile = createTmpFile(JSON.stringify({
+        nodeOptions: {
+          watch: true
+        }
+      }, null, 2), '.json');
+
+      const file = createTmpFile('console.log("running via config");');
+      const args = ['--experimental-config-file', configFile, file];
+      const { stderr, stdout } = await runWriteSucceed({
+        watchedFile: file,
+        watchFlag: null, // Don't pass --watch flag since it should come from config
+        args
+      });
+
+      assert.strictEqual(stderr, '');
+      assert.deepStrictEqual(stdout, [
+        'running via config',
+        `Completed running ${inspect(file)}. Waiting for file changes before restarting...`,
+        `Restarting ${inspect(file)}`,
+        'running via config',
+        `Completed running ${inspect(file)}. Waiting for file changes before restarting...`,
+      ]);
+    });
+
+    it.todo('should respect watch-path from node.config.json', {
+      skip: !supportsRecursive,
+    }, async () => {
+      const watchDir = tmpdir.resolve('watched-config-dir');
+      mkdirSync(watchDir);
+
+      const configFile = createTmpFile(JSON.stringify({
+        nodeOptions: {
+          'watch-path': watchDir
+        }
+      }, null, 2), '.json');
+
+      const file = createTmpFile('console.log("running with watch-path config");');
+      const watchedFile = createTmpFile('// watched file', '.js', watchDir);
+      const args = ['--experimental-config-file', configFile];
+
+      const { stderr, stdout } = await runWriteSucceed({
+        watchedFile,
+        watchFlag: null, // Don't pass --watch flag since it should come from config
+        args
+      });
+
+      assert.strictEqual(stderr, '');
+      assert.deepStrictEqual(stdout, [
+        'running with watch-path config',
+        `Completed running ${inspect(file)}. Waiting for file changes before restarting...`,
+        `Restarting ${inspect(file)}`,
+        'running with watch-path config',
+        `Completed running ${inspect(file)}. Waiting for file changes before restarting...`,
+      ]);
+    });
+
+    it.todo('should watch changes when enabled via NODE_OPTIONS environment variable', async () => {
+      const file = createTmpFile('console.log("running via NODE_OPTIONS");');
+      const { stderr, stdout } = await runWriteSucceed({
+        file,
+        watchedFile: file,
+        watchFlag: null, // Don't pass --watch flag since it should come from NODE_OPTIONS
+        args: [file],
+        options: {
+          env: {
+            ...process.env,
+            NODE_OPTIONS: '--watch'
+          }
+        }
+      });
+
+      assert.strictEqual(stderr, '');
+      assert.deepStrictEqual(stdout, [
+        'running via NODE_OPTIONS',
+        `Completed running ${inspect(file)}. Waiting for file changes before restarting...`,
+        `Restarting ${inspect(file)}`,
+        'running via NODE_OPTIONS',
+        `Completed running ${inspect(file)}. Waiting for file changes before restarting...`,
+      ]);
+    });
+  });
 });
