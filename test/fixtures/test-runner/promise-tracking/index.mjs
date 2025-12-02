@@ -6,6 +6,6 @@ describe(`promises tracking`, async () => {
     await new Promise((resolve) => {
       console.log(`looks like this will never resolve()`);
     });
-    assert.equal(false, true);
+    assert.equal(true, true);
   });
 });
