@@ -773,6 +773,12 @@ EnvironmentOptionsParser::EnvironmentOptionsParser() {
             kDisallowedInEnvvar,
             false,
             OptionNamespaces::kTestRunnerNamespace);
+  AddOption("--test-bail",
+            "abort test execution on first failure",
+            &EnvironmentOptions::test_runner_bail,
+            kDisallowedInEnvvar,
+            false,
+            OptionNamespaces::kTestRunnerNamespace);
   AddOption("--test-timeout",
             "specify test runner timeout",
             &EnvironmentOptions::test_runner_timeout,
