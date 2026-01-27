@@ -848,6 +848,12 @@ EnvironmentOptionsParser::EnvironmentOptionsParser() {
             &EnvironmentOptions::test_runner_concurrency,
             kDisallowedInEnvvar,
             OptionNamespaces::kTestRunnerNamespace);
+  AddOption("--test-bail",
+            "stop test runner on first failure",
+            &EnvironmentOptions::test_runner_bail,
+            kDisallowedInEnvvar,
+            false,
+            OptionNamespaces::kTestRunnerNamespace);
   AddOption("--test-force-exit",
             "force test runner to exit upon completion",
             &EnvironmentOptions::test_runner_force_exit,
