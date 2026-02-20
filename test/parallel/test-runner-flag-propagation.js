@@ -11,6 +11,9 @@ const path = require('node:path');
 
 const fixtureDir = fixtures.path('test-runner', 'flag-propagation');
 const runner = path.join(fixtureDir, 'runner.mjs');
+const issue61852Fixture = path.join(fixtureDir, 'issue-61852.mjs');
+const issue61852InterleavedA = path.join(fixtureDir, 'issue-61852-interleaved-a.mjs');
+const issue61852InterleavedB = path.join(fixtureDir, 'issue-61852-interleaved-b.mjs');
 
 describe('test runner flag propagation', () => {
   describe('via command line', () => {
@@ -64,6 +67,58 @@ describe('test runner flag propagation', () => {
         assert.match(stdout, /pass 1/, `Test should pass for ${flagName} propagation check`);
       });
     }
+
+    it('should preserve user-provided CLI args in process.argv under --test', () => {
+      const child = spawnSync(
+        process.execPath,
+        [
+          '--test-reporter=tap',
+          '--test',
+          issue61852Fixture,
+          '--hello',
+        ],
+        {
+          cwd: fixtureDir,
+        },
+      );
+
+      const stdout = child.stdout.toString();
+      const stderr = child.stderr.toString();
+      assert.strictEqual(
+        child.status,
+        0,
+        `User argv propagation failed.\nstdout:\n${stdout}\nstderr:\n${stderr}`,
+      );
+      assert.match(stdout, /tests 1/, 'Test should execute for user argv propagation');
+      assert.match(stdout, /pass 1/, 'User argv should be preserved under --test');
+    });
+
+    it('should support interleaved file patterns and user args', () => {
+      const child = spawnSync(
+        process.execPath,
+        [
+          '--test-reporter=tap',
+          '--test',
+          issue61852InterleavedA,
+          '--issue-61852-flag-a',
+          issue61852InterleavedB,
+          '--issue-61852-flag-b',
+        ],
+        {
+          cwd: fixtureDir,
+        },
+      );
+
+      const stdout = child.stdout.toString();
+      const stderr = child.stderr.toString();
+      assert.strictEqual(
+        child.status,
+        0,
+        `Interleaved file/argv propagation failed.\nstdout:\n${stdout}\nstderr:\n${stderr}`,
+      );
+      assert.match(stdout, /tests 2/, 'Both test files should execute');
+      assert.match(stdout, /pass 2/, 'Both test files should pass with propagated argv');
+    });
   });
 
   describe('via config file', () => {
