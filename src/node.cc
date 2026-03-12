@@ -360,8 +360,10 @@ MaybeLocal<Value> StartExecution(Environment* env,
     first_argv = env->argv()[1];
   }
 
-  if (first_argv == "inspect") {
-    return StartExecution(env, "internal/main/inspect");
+  if (const auto* subcommand = options_parser::FindSubcommand(first_argv);
+      subcommand != nullptr &&
+      subcommand->kind == options_parser::SubcommandKind::kDedicatedEntry) {
+    return StartExecution(env, subcommand->entry_point);
   }
 
   if (per_process::cli_options->print_help) {

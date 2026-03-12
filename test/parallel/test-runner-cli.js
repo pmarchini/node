@@ -6,41 +6,53 @@ const { spawnSync } = require('child_process');
 const { join } = require('path');
 const fixtures = require('../common/fixtures');
 const testFixtures = fixtures.path('test-runner');
+const testEntrypointMatrix = [
+  { label: '--test flag', args: ['--test'] },
+  { label: 'test subcommand', args: ['test'] },
+];
 
 for (const isolation of ['none', 'process']) {
-  {
-    // File not found.
-    const args = [
-      '--test',
-      `--test-isolation=${isolation}`,
-      'a-random-file-that-does-not-exist.js',
-    ];
-    const child = spawnSync(process.execPath, args);
+  // These cases verify that `node test ...` reaches the same test runner
+  // behavior as `node --test ...` for CLI parsing and discovery.
+  for (const { label, args: testEntrypointArgs } of testEntrypointMatrix) {
+    {
+      // File not found should behave the same for both test entrypoints.
+      const args = [
+        ...testEntrypointArgs,
+        `--test-isolation=${isolation}`,
+        'a-random-file-that-does-not-exist.js',
+      ];
+      const child = spawnSync(process.execPath, args);
 
-    assert.strictEqual(child.status, 1);
-    assert.strictEqual(child.signal, null);
-    assert.strictEqual(child.stdout.toString(), '');
-    assert.match(child.stderr.toString(), /^Could not find/);
-  }
+      assert.strictEqual(child.status, 1, label);
+      assert.strictEqual(child.signal, null, label);
+      assert.strictEqual(child.stdout.toString(), '', label);
+      assert.match(child.stderr.toString(), /^Could not find/, label);
+    }
 
-  {
-    // Default behavior. node_modules is ignored. Files that don't match the
-    // pattern are ignored except in test/ directories.
-    const args = ['--test', '--test-reporter=tap',
-                  `--test-isolation=${isolation}`];
-    const child = spawnSync(process.execPath, args, { cwd: join(testFixtures, 'default-behavior') });
+    {
+      // Default discovery should also be consistent across both entrypoints.
+      // node_modules is ignored. Files that don't match the pattern are
+      // ignored except in test/ directories.
+      const args = [
+        ...testEntrypointArgs,
+        '--test-reporter=tap',
+        `--test-isolation=${isolation}`,
+      ];
+      const child = spawnSync(process.execPath, args, { cwd: join(testFixtures, 'default-behavior') });
 
-    assert.strictEqual(child.status, 1);
-    assert.strictEqual(child.signal, null);
-    assert.strictEqual(child.stderr.toString(), '');
-    const stdout = child.stdout.toString();
+      assert.strictEqual(child.status, 1, label);
+      assert.strictEqual(child.signal, null, label);
+      assert.strictEqual(child.stderr.toString(), '', label);
+      const stdout = child.stdout.toString();
 
-    assert.match(stdout, /ok 1 - this should pass/);
-    assert.match(stdout, /not ok 2 - this should fail/);
-    assert.match(stdout, /ok 3 - subdir.+subdir_test\.js/);
-    assert.match(stdout, /ok 4 - this should pass/);
-    assert.match(stdout, /ok 5 - this should be skipped/);
-    assert.match(stdout, /ok 6 - this should be executed/);
+      assert.match(stdout, /ok 1 - this should pass/, label);
+      assert.match(stdout, /not ok 2 - this should fail/, label);
+      assert.match(stdout, /ok 3 - subdir.+subdir_test\.js/, label);
+      assert.match(stdout, /ok 4 - this should pass/, label);
+      assert.match(stdout, /ok 5 - this should be skipped/, label);
+      assert.match(stdout, /ok 6 - this should be executed/, label);
+    }
   }
 
   {

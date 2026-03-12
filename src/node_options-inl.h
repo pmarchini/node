@@ -272,6 +272,41 @@ inline std::string NegationImpliesBooleanError(const std::string& arg) {
   return arg + " is an invalid negation because it is not a boolean option";
 }
 
+enum class SubcommandKind {
+  kDedicatedEntry,
+  kOptionAlias,
+};
+
+struct SubcommandInfo {
+  const char* name;
+  SubcommandKind kind;
+  const char* entry_point;
+  const char* option_name;
+};
+
+// Reserved CLI subcommands. Option aliases are normalized back into the
+// regular options flow, while dedicated entries keep their own argv grammar.
+constexpr std::array<SubcommandInfo, 2> kSubcommands = {{
+  { "inspect", SubcommandKind::kDedicatedEntry, "internal/main/inspect", nullptr },
+  { "test", SubcommandKind::kOptionAlias, nullptr, "--test" },
+}};
+
+inline const SubcommandInfo* FindSubcommand(const std::string& arg) {
+  for (const auto& subcommand : kSubcommands) {
+    if (arg == subcommand.name) {
+      return &subcommand;
+    }
+  }
+
+  return nullptr;
+}
+
+inline std::string MixedSubcommandError(const char* current,
+                                        const char* active) {
+  return "cannot specify subcommand '" + std::string(current) +
+         "' after subcommand '" + active + "'";
+}
+
 // We store some of the basic information around a single Parse call inside
 // this struct, to separate storage of command line arguments and their
 // handling. In particular, this makes it easier to introduce 'synthetic'
@@ -301,14 +336,17 @@ struct ArgsInfo {
     return synthetic_args.empty() ? underlying->at(1) : synthetic_args.front();
   }
 
-  std::string pop_first() {
+  std::string pop_first(bool include_in_exec_args = true) {
     std::string ret = std::move(first());
     if (synthetic_args.empty()) {
       // Only push arguments to `exec_args` that were also originally passed
       // on the command line (i.e. not generated through alias expansion).
       // '--' is a special case here since its purpose is to end `exec_argv`,
       // which is why we do not include it.
-      if (exec_args != nullptr && ret != "--")
+      // Subcommand aliases are consumed here with `include_in_exec_args=false`
+      // so child processes only see the normalized option form (for example
+      // `--test`) instead of the original subcommand token.
+      if (include_in_exec_args && exec_args != nullptr && ret != "--")
         exec_args->push_back(ret);
       underlying->erase(underlying->begin() + 1);
     } else {
@@ -327,6 +365,7 @@ void OptionsParser<Options>::Parse(
     OptionEnvvarSettings required_env_settings,
     std::vector<std::string>* const errors) const {
   ArgsInfo args(orig_args, exec_args);
+  const SubcommandInfo* active_subcommand = nullptr;
 
   // The first entry is the process name. Make sure it ends up in the V8 argv,
   // since V8::SetFlagsFromCommandLine() expects that to hold true for that
@@ -335,7 +374,38 @@ void OptionsParser<Options>::Parse(
     v8_args->push_back(args.program_name());
 
   while (!args.empty() && errors->empty()) {
-    if (args.first().size() <= 1 || args.first()[0] != '-') break;
+    if (args.first().size() <= 1 || args.first()[0] != '-') {
+      // Once we reach the first positional token, we still allow a reserved
+      // subcommand to take over parsing. This is what makes `node test --watch`
+      // behave like `node --test --watch` without affecting NODE_OPTIONS.
+      const SubcommandInfo* subcommand =
+          required_env_settings == kDisallowedInEnvvar ?
+              FindSubcommand(args.first()) :
+              nullptr;
+
+      if (active_subcommand != nullptr && subcommand != nullptr) {
+        if (subcommand != active_subcommand) {
+          errors->push_back(
+              MixedSubcommandError(subcommand->name, active_subcommand->name));
+        }
+        break;
+      }
+
+      if (subcommand != nullptr &&
+          subcommand->kind == SubcommandKind::kOptionAlias) {
+        // Option-backed subcommands re-enter the normal parser by flipping the
+        // mapped boolean option and then continuing with the remaining argv.
+        auto subcommand_option = options_.find(subcommand->option_name);
+        CHECK(subcommand_option != options_.end());
+        CHECK_EQ(subcommand_option->second.type, kBoolean);
+        args.pop_first(false);
+        *Lookup<bool>(subcommand_option->second.field, options) = true;
+        active_subcommand = subcommand;
+        continue;
+      }
+
+      break;
+    }
 
     // We know that we're either going to consume this
     // argument or fail completely.
