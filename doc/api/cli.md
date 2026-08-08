@@ -2424,6 +2424,21 @@ Starts the Node.js command line test runner. This flag cannot be combined with
 See the documentation on [running tests from the command line][]
 for more details.
 
+### `--test-bail`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> Stability: 1 - Experimental
+
+Configures the test runner to stop the test run when the first test failure
+is encountered. Queued tests are cancelled, and in the default `'process'`
+isolation mode, test files that are still running are terminated. The process
+exits with a non-zero exit code. This flag cannot be combined with `--watch`.
+
+Failures in tests marked as `TODO` and skipped tests do not stop the test run.
+
 ### `--test-concurrency`
 
 <!-- YAML

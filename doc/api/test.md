@@ -1352,6 +1352,11 @@ changes:
 
 * `options` {Object} Configuration options for running tests. The following
   properties are supported:
+  * `bail` {boolean} If truthy, the test run stops when the first test failure
+    is encountered. Queued tests are cancelled, and in the `'process'`
+    isolation mode, test files that are still running are terminated. Failures
+    in tests marked as `TODO` and skipped tests do not stop the test run. This
+    option is not supported with watch mode. **Default:** `false`.
   * `concurrency` {number|boolean} If a number is provided,
     then that many test processes would run in parallel, where each process
     corresponds to one test file.
@@ -3058,6 +3063,26 @@ object, streaming a series of events representing the execution of the tests.
 
 Some of the events are guaranteed to be emitted in the same order as the tests
 are defined, while others are emitted in the order that the tests execute.
+
+### Event: `'test:bailout'`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `data` {Object}
+  * `column` {number|undefined} The column number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `file` {string|undefined} The path of the test file,
+    `undefined` if test was run through the REPL.
+  * `line` {number|undefined} The line number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `nesting` {number} The nesting level of the test.
+  * `reason` {string|undefined} The name of the failing test that caused the
+    test run to bail out.
+
+Emitted when the `bail` option is enabled and a test failure causes the test
+run to stop. This event is emitted at most once per test run.
 
 ### Event: `'test:coverage'`
 

@@ -193,6 +193,9 @@ void EnvironmentOptions::CheckOptions(std::vector<std::string>* errors,
     } else if (test_runner_force_exit) {
       errors->push_back("either --watch or --test-force-exit "
                         "can be used, not both");
+    } else if (test_runner_bail) {
+      errors->push_back("either --watch or --test-bail "
+                        "can be used, not both");
     } else if (!test_runner && (argv->size() < 1 || (*argv)[1].empty())) {
       errors->push_back("--watch requires specifying a file");
     }
@@ -766,6 +769,12 @@ EnvironmentOptionsParser::EnvironmentOptionsParser() {
             "specify test runner concurrency",
             &EnvironmentOptions::test_runner_concurrency,
             kDisallowedInEnvvar,
+            OptionNamespaces::kTestRunnerNamespace);
+  AddOption("--test-bail",
+            "stop test execution when a test fails",
+            &EnvironmentOptions::test_runner_bail,
+            kDisallowedInEnvvar,
+            false,
             OptionNamespaces::kTestRunnerNamespace);
   AddOption("--test-force-exit",
             "force test runner to exit upon completion",
