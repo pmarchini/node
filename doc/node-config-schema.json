@@ -598,6 +598,9 @@
         "experimental-test-module-mocks": {
           "type": "boolean"
         },
+        "test-bail": {
+          "type": "boolean"
+        },
         "test-concurrency": {
           "type": "number"
         },
