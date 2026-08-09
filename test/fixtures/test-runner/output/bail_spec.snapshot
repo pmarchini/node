@@ -1,7 +1,7 @@
 ✔ first - passes (*ms)
 ✖ second - fails and bails (*ms)
-✖ third - is cancelled
 ✖ Bail out! second - fails and bails
+✖ third - is cancelled
 ℹ tests 3
 ℹ suites 0
 ℹ pass 1
@@ -32,4 +32,4 @@
 
 *
 ✖ third - is cancelled
-  'test run bailed out'
+  'test was cancelled because the test run bailed out'

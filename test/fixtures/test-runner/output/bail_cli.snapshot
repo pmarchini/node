@@ -25,6 +25,7 @@ not ok 2 - a-failing
     *
     *
   ...
+Bail out! a-failing
 # Subtest: a-after-failure
 not ok 3 - a-after-failure
   ---
@@ -32,7 +33,7 @@ not ok 3 - a-after-failure
   type: 'test'
   location: '/test/fixtures/test-runner/bail/a.mjs:(LINE):1'
   failureType: 'testBailedOut'
-  error: 'test run bailed out'
+  error: 'test was cancelled because the test run bailed out'
   code: 'ERR_TEST_FAILURE'
   ...
 # Subtest: b-passing
@@ -42,10 +43,9 @@ not ok 4 - b-passing
   type: 'test'
   location: '/test/fixtures/test-runner/bail/b.mjs:(LINE):1'
   failureType: 'testBailedOut'
-  error: 'test run bailed out'
+  error: 'test was cancelled because the test run bailed out'
   code: 'ERR_TEST_FAILURE'
   ...
-Bail out! a-failing
 1..4
 # tests 4
 # suites 0
