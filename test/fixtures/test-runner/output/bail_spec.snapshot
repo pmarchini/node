@@ -1,7 +1,7 @@
 ✔ first - passes (*ms)
 ✖ second - fails and bails (*ms)
 ✖ Bail out! second - fails and bails
-✖ third - is cancelled
+✖ third - is cancelled (cancelled by bail out)
 ℹ tests 3
 ℹ suites 0
 ℹ pass 1
