@@ -29,7 +29,3 @@
     expected: undefined,
     operator: 'fail'
   }
-
-*
-✖ third - is cancelled
-  'test was cancelled because the test run bailed out'
