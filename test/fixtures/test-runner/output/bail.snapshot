@@ -1,0 +1,47 @@
+TAP version 13
+# Subtest: first - passes
+ok 1 - first - passes
+  ---
+  duration_ms: *
+  type: 'test'
+  ...
+# Subtest: second - fails and bails
+not ok 2 - second - fails and bails
+  ---
+  duration_ms: *
+  type: 'test'
+  location: '/test/fixtures/test-runner/output/bail.mjs:(LINE):1'
+  failureType: 'testCodeFailure'
+  error: 'bail out here'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  operator: 'fail'
+  stack: |-
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+  ...
+# Subtest: third - is cancelled
+not ok 3 - third - is cancelled
+  ---
+  duration_ms: *
+  type: 'test'
+  location: '/test/fixtures/test-runner/output/bail.mjs:(LINE):1'
+  failureType: 'testBailedOut'
+  error: 'test run bailed out'
+  code: 'ERR_TEST_FAILURE'
+  ...
+Bail out! second - fails and bails
+1..3
+# tests 3
+# suites 0
+# pass 1
+# fail 1
+# cancelled 1
+# skipped 0
+# todo 0
+# duration_ms *

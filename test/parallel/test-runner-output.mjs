@@ -195,6 +195,13 @@ const tests = [
     false,
   { name: 'test-runner/output/output.js', flags: ['--test-reporter=tap'] },
   { name: 'test-runner/output/output_cli.js' },
+  { name: 'test-runner/output/bail.mjs', flags: ['--test-reporter=tap', '--test-bail'] },
+  {
+    name: 'test-runner/output/bail_spec.mjs',
+    flags: ['--test-reporter=spec', '--test-bail'],
+    transform: specTransform,
+  },
+  { name: 'test-runner/output/bail_cli.mjs' },
   {
     name: 'test-runner/output/name_and_skip_patterns.js',
     flags: ['--test-reporter=tap'],
