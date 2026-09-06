@@ -60,6 +60,19 @@ test('a reporter running in the test process writes its console output straight 
   ]);
 });
 
+test('a test that consumes a nested run() keeps its console output and terminates', () => {
+  const script = fixtures.path('test-runner', 'console-output', 'run-inside-test.js');
+
+  const lines = runNode(['--test-reporter=tap', script, logInTest]);
+
+  deepStrictEqual(lines.filter((line) => /inner passed|outer/.test(line)), [
+    '# inner passed: first',
+    '# inner passed: second',
+    '# Subtest: outer',
+    'ok 1 - outer',
+  ]);
+});
+
 test('console output after run() has finished is written straight to stdout', () => {
   const script = fixtures.path('test-runner', 'console-output', 'run-then-log.mjs');
 
