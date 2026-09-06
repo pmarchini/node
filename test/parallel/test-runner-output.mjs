@@ -228,6 +228,11 @@ const tests = [
     name: 'test-runner/output/console-output-with-test-flag.js',
     flags: ['--test', '--test-reporter=tap'],
   },
+  canColorize ? {
+    name: 'test-runner/output/console-output-colored.js',
+    transform: snapshot.transform(specTransform, replaceTestDuration),
+    tty: true,
+  } : false,
   {
     name: 'test-runner/output/non-tty-forced-color-output.js',
     transform: specTransform,
