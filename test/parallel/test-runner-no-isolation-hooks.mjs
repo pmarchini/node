@@ -45,6 +45,13 @@ const order = [
   'after two: <root>',
 ].join('\n');
 
+// Hook output is reported in order with the tests that produce it, so it is
+// interleaved with the reporter's own lines, which start with a symbol or
+// indentation rather than a word.
+function hookOutput(stdout) {
+  return stdout.split('\n').filter((line) => /^\w/.test(line)).join('\n');
+}
+
 test('use --import (CJS) to define global hooks', async (t) => {
   const { stdout } = await common.spawnPromisified(process.execPath, [
     ...testArguments,
@@ -52,7 +59,7 @@ test('use --import (CJS) to define global hooks', async (t) => {
     ...testFiles,
   ]);
 
-  const testHookOutput = stdout.split('\n▶')[0];
+  const testHookOutput = hookOutput(stdout);
 
   t.assert.equal(testHookOutput, order);
 });
@@ -64,7 +71,7 @@ test('use --import (ESM) to define global hooks', async (t) => {
     ...testFiles,
   ]);
 
-  const testHookOutput = stdout.split('\n▶')[0];
+  const testHookOutput = hookOutput(stdout);
 
   t.assert.equal(testHookOutput, order);
 });
@@ -76,7 +83,7 @@ test('use --require to define global hooks', async (t) => {
     ...testFiles,
   ]);
 
-  const testHookOutput = stdout.split('\n▶')[0];
+  const testHookOutput = hookOutput(stdout);
 
   t.assert.equal(testHookOutput, order);
 });
