@@ -1,11 +1,11 @@
 BEFORE
 BEFORE EACH
 AFTER EACH
+✔ passes but oops (*ms)
 BEFORE EACH
 AFTER EACH
-AFTER
-✔ passes but oops (*ms)
 ✔ also passes (*ms)
+AFTER
 ℹ tests 2
 ℹ suites 0
 ℹ pass 2

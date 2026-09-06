@@ -40,6 +40,12 @@ test('console output is reported in order with its test when tests run in the cu
   deepStrictEqual(lines.filter(mentionsATest), expectedTapOrder);
 });
 
+test('console output is reported in order with its test when the file runs without --test', () => {
+  const lines = runNode(['--test-reporter=tap', logInTest]);
+
+  deepStrictEqual(lines.filter(mentionsATest), expectedTapOrder);
+});
+
 test('a reporter running in the test process writes its console output straight to stdout', () => {
   const reporter = fixtures.fileURL('test-runner', 'console-output', 'logging-reporter.mjs');
 

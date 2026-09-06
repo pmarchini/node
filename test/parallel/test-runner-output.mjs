@@ -221,6 +221,14 @@ const tests = [
     flags: ['--test-reporter=tap'],
   },
   {
+    name: 'test-runner/output/console-output.js',
+    flags: ['--test-reporter=tap'],
+  },
+  {
+    name: 'test-runner/output/console-output-with-test-flag.js',
+    flags: ['--test', '--test-reporter=tap'],
+  },
+  {
     name: 'test-runner/output/non-tty-forced-color-output.js',
     transform: specTransform,
   },

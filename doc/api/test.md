@@ -3281,11 +3281,10 @@ The corresponding execution ordered event is `'test:dequeue'`.
   * `message` {string} The message written to `stderr`.
 
 Emitted when a running test writes to `stderr`.
-This event is only emitted if `--test` flag is passed.
-Output written through the global `console` is emitted in order with the other
-events of the test that produced it. Output written directly to
-`process.stderr` is not guaranteed to be emitted in the same order as the
-tests are defined.
+Output written through the global `console` while a test is running is
+emitted in order with the other events of that test. Output written directly
+to `process.stderr` is only emitted if the `--test` flag is passed, and is
+not guaranteed to be emitted in the same order as the tests are defined.
 
 ### Event: `'test:stdout'`
 
@@ -3294,11 +3293,10 @@ tests are defined.
   * `message` {string} The message written to `stdout`.
 
 Emitted when a running test writes to `stdout`.
-This event is only emitted if `--test` flag is passed.
-Output written through the global `console` is emitted in order with the other
-events of the test that produced it. Output written directly to
-`process.stdout` is not guaranteed to be emitted in the same order as the
-tests are defined.
+Output written through the global `console` while a test is running is
+emitted in order with the other events of that test. Output written directly
+to `process.stdout` is only emitted if the `--test` flag is passed, and is
+not guaranteed to be emitted in the same order as the tests are defined.
 
 ### Event: `'test:summary'`
 

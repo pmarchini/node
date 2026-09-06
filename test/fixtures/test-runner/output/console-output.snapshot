@@ -1,0 +1,56 @@
+module scope
+TAP version 13
+# root before hook
+# suite body
+# beforeEach hook
+# log from test
+# error from test
+# Subtest: test with output
+ok 1 - test with output
+  ---
+  duration_ms: *
+  type: 'test'
+  ...
+# beforeEach hook
+# log from nested test
+# afterEach hook in suite
+# Subtest: suite with output
+    # Subtest: nested test with output
+    ok 1 - nested test with output
+      ---
+      duration_ms: *
+      type: 'test'
+      ...
+    1..1
+ok 2 - suite with output
+  ---
+  duration_ms: *
+  type: 'suite'
+  ...
+# beforeEach hook
+# beforeEach hook
+# log from subtest
+# Subtest: test with subtests
+    # Subtest: subtest with output
+    ok 1 - subtest with output
+      ---
+      duration_ms: *
+      type: 'test'
+      ...
+# log after subtest
+    1..1
+ok 3 - test with subtests
+  ---
+  duration_ms: *
+  type: 'test'
+  ...
+# root after hook
+1..3
+# tests 4
+# suites 1
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms *

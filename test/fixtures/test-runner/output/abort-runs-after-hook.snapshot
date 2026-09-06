@@ -1,5 +1,5 @@
 TAP version 13
-AFTER
+# AFTER
 # Subtest: test that aborts
 not ok 1 - test that aborts
   ---

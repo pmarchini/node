@@ -1,17 +1,17 @@
+﹣ skip all hooks in this suite (*ms) # SKIP
 BEFORE 2
+▶ suite runs with mixture of skipped tests
+  ﹣ should not run (*ms) # SKIP
 BEFORE EACH 2
 should run 1
 AFTER EACH 2
+  ✔ should run 1 (*ms)
+  ﹣ should not run (*ms) # SKIP
 BEFORE EACH 2
 should run 2
 AFTER EACH 2
-AFTER 2
-﹣ skip all hooks in this suite (*ms) # SKIP
-▶ suite runs with mixture of skipped tests
-  ﹣ should not run (*ms) # SKIP
-  ✔ should run 1 (*ms)
-  ﹣ should not run (*ms) # SKIP
   ✔ should run 2 (*ms)
+AFTER 2
 ✔ suite runs with mixture of skipped tests (*ms)
 ℹ tests 4
 ℹ suites 2
