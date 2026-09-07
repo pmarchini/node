@@ -21,6 +21,10 @@ function replaceTestDuration(str) {
     .replaceAll(/duration_ms [0-9.]+/g, 'duration_ms *');
 }
 
+function replaceConsoleTimings(str) {
+  return str.replaceAll(/: [0-9.]+ms/g, ': *ms');
+}
+
 const root = fileURLToPath(new URL('../..', import.meta.url)).slice(0, -1);
 
 const color = '(\\[\\d+m)';
@@ -227,6 +231,11 @@ const tests = [
   {
     name: 'test-runner/output/console-output-with-test-flag.js',
     flags: ['--test', '--test-reporter=tap'],
+  },
+  {
+    name: 'test-runner/output/console-output-methods.js',
+    flags: ['--test-reporter=tap', '--stack-trace-limit=0'],
+    transform: snapshot.transform(defaultTransform, replaceConsoleTimings),
   },
   canColorize ? {
     name: 'test-runner/output/console-output-colored.js',
