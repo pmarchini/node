@@ -1,4 +1,3 @@
-- after() called
  describe hooks
    1 (*ms)
    2 (*ms)
@@ -77,6 +76,7 @@
  afterEach throws and test fails (*ms)
  t.after() is called if test body throws (*ms)
  - after() called
+- after() called
  run after when before throws
    1
  run after when before throws (*ms)

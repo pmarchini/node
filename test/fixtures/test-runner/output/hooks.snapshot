@@ -1,4 +1,3 @@
-- after() called
 TAP version 13
 # Subtest: describe hooks
     # Subtest: 1
@@ -784,6 +783,7 @@ not ok 23 - t.after() is called if test body throws
     *
     *
   ...
+# - after() called
 # - after() called
 # Subtest: run after when before throws
     # Subtest: 1

@@ -1,0 +1,43 @@
+TAP version 13
+# log
+# info
+# debug
+# warn
+# error
+# { nested: [Object] }
+# dirxml
+# ┌─────────┬───┬─────┐
+# │ (index) │ a │ b   │
+# ├─────────┼───┼─────┤
+# │ 0       │ 1 │ 'x' │
+# │ 1       │ 2 │ 'y' │
+# └─────────┴───┴─────┘
+# group
+#   inside group
+#   two lines
+#   inside group
+#   collapsed group
+#     inside collapsed group
+# outside groups
+# Assertion failed: assertion message
+# counter: 1
+# counter: 2
+# counter: 1
+# timer: *ms checkpoint
+# timer: *ms
+# Trace: trace message
+# Subtest: every console method
+ok 1 - every console method
+  ---
+  duration_ms: *
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms *

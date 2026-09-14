@@ -1,12 +1,5 @@
-before
-2.1
-2.2
-after
-beforeEach
-4.1
-afterEach
-4.2
 TAP version 13
+# before
 # Subtest: 1 before describe
     # Subtest: test 1
     not ok 1 - test 1
@@ -50,6 +43,7 @@ not ok 1 - 1 before describe
     *
     *
   ...
+# 2.1
 # Subtest: 2 after describe
     # Subtest: test 1
     ok 1 - test 1
@@ -57,12 +51,14 @@ not ok 1 - 1 before describe
       duration_ms: *
       type: 'test'
       ...
+# 2.2
     # Subtest: test 2
     ok 2 - test 2
       ---
       duration_ms: *
       type: 'test'
       ...
+# after
     1..2
 not ok 2 - 2 after describe
   ---
@@ -85,6 +81,7 @@ not ok 2 - 2 after describe
     *
     *
   ...
+# beforeEach
 # Subtest: 3 beforeEach describe
     # Subtest: test 1
     not ok 1 - test 1
@@ -140,6 +137,8 @@ not ok 3 - 3 beforeEach describe
   error: '2 subtests failed'
   code: 'ERR_TEST_FAILURE'
   ...
+# 4.1
+# afterEach
 # Subtest: 4 afterEach describe
     # Subtest: test 1
     not ok 1 - test 1
@@ -163,6 +162,7 @@ not ok 3 - 3 beforeEach describe
         *
         *
       ...
+# 4.2
     # Subtest: test 2
     not ok 2 - test 2
       ---
