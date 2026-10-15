@@ -155,7 +155,7 @@ void EnvironmentOptions::CheckOptions(std::vector<std::string>* errors,
     if (test_isolation == "none") {
       debug_options_.allow_attaching_debugger = true;
     } else {
-      if (test_isolation != "process") {
+      if (test_isolation != "process" && test_isolation != "group") {
         errors->push_back("invalid value for --test-isolation");
       }
 

@@ -2435,7 +2435,8 @@ added:
 
 The maximum number of test files that the test runner CLI will execute
 concurrently. If `--test-isolation` is set to `'none'`, this flag is ignored and
-concurrency is one. Otherwise, concurrency defaults to
+concurrency is one. If `--test-isolation` is set to `'group'`, this flag sets
+the number of worker processes. Otherwise, concurrency defaults to
 `os.availableParallelism() - 1`.
 
 ### `--test-coverage-branches=threshold`
@@ -2537,6 +2538,9 @@ See the documentation on [global setup and teardown][] for more details.
 <!-- YAML
 added: v22.8.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/00000
+    description: Added the `'group'` mode.
   - version: v23.6.0
     pr-url: https://github.com/nodejs/node/pull/56298
     description: This flag was renamed from `--experimental-test-isolation` to
@@ -2545,7 +2549,9 @@ changes:
 
 Configures the type of test isolation used in the test runner. When `mode` is
 `'process'`, each test file is run in a separate child process. When `mode` is
-`'none'`, all test files run in the same process as the test runner. The default
+`'none'`, all test files run in the same process as the test runner. When `mode`
+is `'group'`, the test files are split across [`--test-concurrency`][] worker
+processes, and each worker runs its files with `'none'` isolation. The default
 isolation mode is `'process'`. This flag is ignored if the `--test` flag is not
 present. See the [test runner execution model][] section for more information.
 
@@ -3956,6 +3962,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # prints 12
 [`--print`]: #-p---print-script
 [`--redirect-warnings`]: #--redirect-warningsfile
 [`--require`]: #-r---require-module
+[`--test-concurrency`]: #--test-concurrency
 [`AsyncLocalStorage`]: async_context.md#class-asynclocalstorage
 [`Buffer`]: buffer.md#class-buffer
 [`CRYPTO_secure_malloc_init`]: https://www.openssl.org/docs/man3.0/man3/CRYPTO_secure_malloc_init.html

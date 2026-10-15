@@ -520,6 +520,22 @@ each other in ways that are not possible when isolation is enabled. For example,
 if a test relies on global state, it is possible for that state to be modified
 by a test originating from another file.
 
+When group isolation is enabled, the matching test files are sorted and split
+round-robin into one shard per worker process. The number of workers is the
+value of [`--test-concurrency`][], capped at the number of test files. Each
+worker imports and runs the files of its shard as if process-level isolation
+were disabled, so tests can share state with other files in the same shard but
+not with files in other shards. If [`--test-shard`][] is also used, it selects
+the files first and the selected files are then split across the workers.
+
+Each shard is reported as a suite named `shard <index>/<total>` that contains
+the tests of its files. Its duration is the wall-clock time of the worker
+process. Before the suite result, the shard reports the counts of its own run
+as diagnostics: `tests`, `suites`, `pass`, `fail`, `cancelled`, `skipped`,
+`todo`, `duration_ms` and `files`. The final summary covers all shards. If a
+worker process exits unexpectedly, its shard is reported as failed with the
+exit code and signal of the process.
+
 ## Collecting code coverage
 
 > Stability: 1 - Experimental
@@ -1378,7 +1394,10 @@ changes:
     spawned. **Default:** `undefined`.
   * `isolation` {string} Configures the type of test isolation. If set to
     `'process'`, each test file is run in a separate child process. If set to
-    `'none'`, all test files run in the current process. **Default:**
+    `'none'`, all test files run in the current process. If set to `'group'`,
+    the test files are split across `concurrency` worker processes, and each
+    worker runs its files in a single process. `'group'` is not supported with
+    `watch`. See the [test runner execution model][]. **Default:**
     `'process'`.
   * `only`: {boolean} If truthy, the test context will only run tests that
     have the `only` option set
@@ -3929,6 +3948,7 @@ Can be used to abort test subtasks when the test has been aborted.
 [`--test-only`]: cli.md#--test-only
 [`--test-reporter-destination`]: cli.md#--test-reporter-destination
 [`--test-reporter`]: cli.md#--test-reporter
+[`--test-shard`]: cli.md#--test-shard
 [`--test-skip-pattern`]: cli.md#--test-skip-pattern
 [`--test-update-snapshots`]: cli.md#--test-update-snapshots
 [`--test`]: cli.md#--test
