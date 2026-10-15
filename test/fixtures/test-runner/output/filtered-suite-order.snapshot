@@ -1,20 +1,6 @@
 Execution order was:
- * A > A
- * A > C > A
- * A > D > A
- * B > A
- * B > B
- * B > C > A
- * C > A
- * C > C > A
- * C > C > B
- * C > D > B
- * D > B
- * E > A
- * E > B
- * F
-with global after()
 TAP version 13
+#  * A > A
 # Subtest: A
     # Subtest: A
     ok 1 - A
@@ -22,6 +8,7 @@ TAP version 13
       duration_ms: *
       type: 'test'
       ...
+#  * A > C > A
     # Subtest: C
         # Subtest: A
         ok 1 - A
@@ -35,6 +22,7 @@ TAP version 13
       duration_ms: *
       type: 'suite'
       ...
+#  * A > D > A
     # Subtest: D
         # Subtest: A
         ok 1 - A
@@ -54,6 +42,7 @@ ok 1 - A
   duration_ms: *
   type: 'suite'
   ...
+#  * B > A
 # Subtest: B
     # Subtest: A
     ok 1 - A
@@ -61,12 +50,14 @@ ok 1 - A
       duration_ms: *
       type: 'test'
       ...
+#  * B > B
     # Subtest: B
     ok 2 - B
       ---
       duration_ms: *
       type: 'test'
       ...
+#  * B > C > A
     # Subtest: C
         # Subtest: A
         ok 1 - A
@@ -86,6 +77,7 @@ ok 2 - B
   duration_ms: *
   type: 'suite'
   ...
+#  * C > A
 # Subtest: C
     # Subtest: A
     ok 1 - A
@@ -93,6 +85,7 @@ ok 2 - B
       duration_ms: *
       type: 'test'
       ...
+#  * C > C > A
     # Subtest: C
         # Subtest: A
         ok 1 - A
@@ -100,6 +93,7 @@ ok 2 - B
           duration_ms: *
           type: 'test'
           ...
+#  * C > C > B
         # Subtest: B
         ok 2 - B
           ---
@@ -112,6 +106,7 @@ ok 2 - B
       duration_ms: *
       type: 'suite'
       ...
+#  * C > D > B
     # Subtest: D
         # Subtest: B
         ok 1 - B
@@ -131,6 +126,7 @@ ok 3 - C
   duration_ms: *
   type: 'suite'
   ...
+#  * D > B
 # Subtest: D
     # Subtest: B
     ok 1 - B
@@ -144,6 +140,7 @@ ok 4 - D
   duration_ms: *
   type: 'suite'
   ...
+#  * E > A
 # Subtest: E
     # Subtest: A
     ok 1 - A
@@ -151,6 +148,7 @@ ok 4 - D
       duration_ms: *
       type: 'test'
       ...
+#  * E > B
     # Subtest: B
     ok 2 - B
       ---
@@ -163,12 +161,14 @@ ok 5 - E
   duration_ms: *
   type: 'suite'
   ...
+#  * F
 # Subtest: F
 ok 6 - F
   ---
   duration_ms: *
   type: 'test'
   ...
+# with global after()
 1..6
 # tests 14
 # suites 10
