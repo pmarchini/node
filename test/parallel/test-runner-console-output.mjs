@@ -60,6 +60,20 @@ test('a reporter running in the test process writes its console output straight 
   ]);
 });
 
+test('event listeners that log while a test runs write straight to stdout and terminate', () => {
+  const script = fixtures.path('test-runner', 'console-output', 'run-with-logging-listeners.mjs');
+
+  const lines = runNode([script, logInTest]);
+
+  deepStrictEqual(lines, [
+    'listener saw stdout: log from first',
+    'listener saw pass: first',
+    'listener saw stdout: log from second',
+    'listener saw pass: second',
+    '',
+  ]);
+});
+
 test('a test that consumes a nested run() keeps its console output and terminates', () => {
   const script = fixtures.path('test-runner', 'console-output', 'run-inside-test.js');
 

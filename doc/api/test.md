@@ -3281,10 +3281,12 @@ The corresponding execution ordered event is `'test:dequeue'`.
   * `message` {string} The message written to `stderr`.
 
 Emitted when a running test writes to `stderr`.
-Output written through the global `console` while a test is running is
-emitted in order with the other events of that test. Output written directly
-to `process.stderr` is only emitted if the `--test` flag is passed, and is
-not guaranteed to be emitted in the same order as the tests are defined.
+Output written through the global `console` from within a test, its hooks, or
+a suite body, including from functions in other modules, is emitted in order
+with the other events of that test, and `file` is the file of that test.
+Output written directly to `process.stderr` is only emitted when the test
+file runs in a child process, and is not guaranteed to be emitted in the same
+order as the tests are defined.
 
 ### Event: `'test:stdout'`
 
@@ -3293,10 +3295,12 @@ not guaranteed to be emitted in the same order as the tests are defined.
   * `message` {string} The message written to `stdout`.
 
 Emitted when a running test writes to `stdout`.
-Output written through the global `console` while a test is running is
-emitted in order with the other events of that test. Output written directly
-to `process.stdout` is only emitted if the `--test` flag is passed, and is
-not guaranteed to be emitted in the same order as the tests are defined.
+Output written through the global `console` from within a test, its hooks, or
+a suite body, including from functions in other modules, is emitted in order
+with the other events of that test, and `file` is the file of that test.
+Output written directly to `process.stdout` is only emitted when the test
+file runs in a child process, and is not guaranteed to be emitted in the same
+order as the tests are defined.
 
 ### Event: `'test:summary'`
 
