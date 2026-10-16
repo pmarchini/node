@@ -8,6 +8,8 @@ const basicFiles = fixtures.path('test-runner', 'isolation-group', 'basic', '*.c
 const failingFiles = fixtures.path('test-runner', 'isolation-group', 'failing', '*.cjs');
 const exitingFile = fixtures.path('test-runner', 'isolation-group', 'crash', 'exits.cjs');
 const slowAndFastFiles = fixtures.path('test-runner', 'isolation-group', 'ordering', '*.cjs');
+const todoThenCrashFiles = fixtures.path('test-runner', 'isolation-group', 'todo-then-crash', '*.cjs');
+const earlyExitFiles = fixtures.path('test-runner', 'isolation-group', 'early-exit', '*.cjs');
 
 function runTestCli(...args) {
   const child = spawnSync(process.execPath, ['--test', '--test-reporter=tap', ...args]);
@@ -125,5 +127,34 @@ describe('--test-isolation=group', () => {
       '1 test d.cjs runs in pid N',
       '0 suite shard 2/2',
     ]);
+  });
+
+  it('passes run() argv to the test files instead of to the worker process', async () => {
+    const files = [fixtures.path('test-runner', 'isolation-group', 'argv', 'sees-argv.cjs')];
+    const passed = [];
+
+    const stream = run({ files, isolation: 'group', argv: ['--custom-flag'] });
+    stream.on('test:pass', ({ name }) => passed.push(name));
+    // eslint-disable-next-line no-unused-vars
+    for await (const _ of stream);
+
+    assert.deepStrictEqual(passed, ['sees --custom-flag in process.argv: true', 'shard 1/1']);
+  });
+
+  it('still fails the run when a worker crashes after a failing todo test', () => {
+    const { status, stdout } = runTestCli('--test-isolation=group', '--test-concurrency=1', todoThenCrashFiles);
+
+    assert.strictEqual(status, 1);
+    assert.match(stdout, /^ {2}failureType: 'testCodeFailure'\n {2}exitCode: 7$/m);
+    assert.match(stdout, /^# fail 1$/m);
+  });
+
+  it('fails the shard when its worker exits with code 0 before finishing its files', () => {
+    const { status, stdout } = runTestCli('--test-isolation=group', '--test-concurrency=1', earlyExitFiles);
+
+    assert.strictEqual(status, 1);
+    assert.match(stdout, /^not ok 1 - shard 1\/1$/m);
+    assert.match(stdout, /^ {2}exitCode: 0$/m);
+    assert.match(stdout, /^# fail 1$/m);
   });
 });

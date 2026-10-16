@@ -2436,8 +2436,9 @@ added:
 The maximum number of test files that the test runner CLI will execute
 concurrently. If `--test-isolation` is set to `'none'`, this flag is ignored and
 concurrency is one. If `--test-isolation` is set to `'group'`, this flag sets
-the number of worker processes. Otherwise, concurrency defaults to
-`os.availableParallelism() - 1`.
+the number of worker processes instead, capped at the number of test files.
+Otherwise, concurrency defaults to `os.availableParallelism() - 1`, and so does
+the number of workers in `'group'` mode.
 
 ### `--test-coverage-branches=threshold`
 
@@ -2551,9 +2552,10 @@ Configures the type of test isolation used in the test runner. When `mode` is
 `'process'`, each test file is run in a separate child process. When `mode` is
 `'none'`, all test files run in the same process as the test runner. When `mode`
 is `'group'`, the test files are split across [`--test-concurrency`][] worker
-processes, and each worker runs its files with `'none'` isolation. The default
-isolation mode is `'process'`. This flag is ignored if the `--test` flag is not
-present. See the [test runner execution model][] section for more information.
+processes, and each worker runs its files with `'none'` isolation. The
+`'group'` mode cannot be used with [`--watch`][]. The default isolation mode is
+`'process'`. This flag is ignored if the `--test` flag is not present. See the
+[test runner execution model][] section for more information.
 
 ### `--test-name-pattern`
 
@@ -3963,6 +3965,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # prints 12
 [`--redirect-warnings`]: #--redirect-warningsfile
 [`--require`]: #-r---require-module
 [`--test-concurrency`]: #--test-concurrency
+[`--watch`]: #--watch
 [`AsyncLocalStorage`]: async_context.md#class-asynclocalstorage
 [`Buffer`]: buffer.md#class-buffer
 [`CRYPTO_secure_malloc_init`]: https://www.openssl.org/docs/man3.0/man3/CRYPTO_secure_malloc_init.html

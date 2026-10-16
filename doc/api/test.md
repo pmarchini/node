@@ -520,21 +520,29 @@ each other in ways that are not possible when isolation is enabled. For example,
 if a test relies on global state, it is possible for that state to be modified
 by a test originating from another file.
 
-When group isolation is enabled, the matching test files are sorted and split
-round-robin into one shard per worker process. The number of workers is the
-value of [`--test-concurrency`][], capped at the number of test files. Each
-worker imports and runs the files of its shard as if process-level isolation
-were disabled, so tests can share state with other files in the same shard but
-not with files in other shards. If [`--test-shard`][] is also used, it selects
-the files first and the selected files are then split across the workers.
+When group isolation is enabled, the test files are split round-robin into one
+shard per worker process. Test files found by the test runner are sorted before
+they are split. Files passed to [`run()`][] through the `files` option are split
+in the order given. The number of workers is the value of
+[`--test-concurrency`][], which defaults to `os.availableParallelism() - 1`, and
+it is capped at the number of test files. When the inspector is used, a single
+worker runs all test files. Each worker imports and runs the files of its shard
+as if process-level isolation were disabled, so tests can share state with other
+files in the same shard but not with files in other shards. As with
+process-level isolation, tests are only filtered by their `only` option when
+[`--test-only`][] is used. If [`--test-shard`][] is also used, it selects the
+files first and the selected files are then split across the workers. Group
+isolation is not supported in watch mode.
 
 Each shard is reported as a suite named `shard <index>/<total>` that contains
 the tests of its files. Its duration is the wall-clock time of the worker
 process. Before the suite result, the shard reports the counts of its own run
 as diagnostics: `tests`, `suites`, `pass`, `fail`, `cancelled`, `skipped`,
-`todo`, `duration_ms` and `files`. The final summary covers all shards. If a
-worker process exits unexpectedly, its shard is reported as failed with the
-exit code and signal of the process.
+`todo`, `duration_ms` and `files`. The final summary covers all shards, and the
+shard suites are included in its `suites` count. If a worker process exits
+unexpectedly, or exits before it has run all files of its shard, the shard is
+reported as failed with the exit code and signal of the process. Such a failure
+is counted as one failed test.
 
 ## Collecting code coverage
 
@@ -1374,6 +1382,8 @@ changes:
     If `true`, it would run `os.availableParallelism() - 1` test files in
     parallel.
     If `false`, it would only run one test file at a time.
+    If `isolation` is `'group'`, this is the number of worker processes
+    instead, capped at the number of test files.
     **Default:** `false`.
   * `cwd`: {string} Specifies the current working directory to be used by the test runner.
     Serves as the base path for resolving files according to the [test runner execution model][].
@@ -1409,6 +1419,9 @@ changes:
     **Default:** `[]`
   * `argv` {Array} An array of CLI flags to pass to each test file when spawning the
     subprocesses. This option has no effect when `isolation` is `'none'`.
+    When `isolation` is `'group'`, the flags are passed to each worker process.
+    In `process.argv`, they follow the executable path directly, because a
+    worker is not started with a single test file.
     **Default:** `[]`.
   * `signal` {AbortSignal} Allows aborting an in-progress test execution.
   * `testNamePatterns` {string|RegExp|Array} A String, RegExp or a RegExp Array,
@@ -3296,7 +3309,9 @@ The corresponding execution ordered event is `'test:dequeue'`.
 ### Event: `'test:stderr'`
 
 * `data` {Object}
-  * `file` {string} The path of the test file.
+  * `file` {string} The path of the test file. When test isolation is
+    `'group'`, this is the name of the shard, such as `shard 1/2`, because a
+    worker process runs several test files.
   * `message` {string} The message written to `stderr`.
 
 Emitted when a running test writes to `stderr`.
@@ -3307,7 +3322,9 @@ defined.
 ### Event: `'test:stdout'`
 
 * `data` {Object}
-  * `file` {string} The path of the test file.
+  * `file` {string} The path of the test file. When test isolation is
+    `'group'`, this is the name of the shard, such as `shard 1/2`, because a
+    worker process runs several test files.
   * `message` {string} The message written to `stdout`.
 
 Emitted when a running test writes to `stdout`.
