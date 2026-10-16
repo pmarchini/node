@@ -87,6 +87,17 @@ test('a test that consumes a nested run() keeps its console output and terminate
   ]);
 });
 
+test('console output goes to process.stdout while a test spies on its write()', () => {
+  const script = fixtures.path('test-runner', 'console-output', 'spy-on-stdout.js');
+
+  const lines = runNode(['--test-reporter=tap', script]);
+
+  deepStrictEqual(lines.filter((line) => /seen by the spy|captured after restore/.test(line)), [
+    'seen by the spy',
+    '# captured after restore',
+  ]);
+});
+
 test('console output after run() has finished is written straight to stdout', () => {
   const script = fixtures.path('test-runner', 'console-output', 'run-then-log.mjs');
 

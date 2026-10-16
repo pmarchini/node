@@ -3284,6 +3284,8 @@ Emitted when a running test writes to `stderr`.
 Output written through the global `console` from within a test, its hooks, or
 a suite body, including from functions in other modules, is emitted in order
 with the other events of that test, and `file` is the file of that test.
+While `process.stderr` or its `write()` method is replaced, for example by a
+mock, console output is written to it instead of being emitted as this event.
 Output written directly to `process.stderr` is only emitted when the test
 file runs in a child process, and is not guaranteed to be emitted in the same
 order as the tests are defined.
@@ -3298,6 +3300,8 @@ Emitted when a running test writes to `stdout`.
 Output written through the global `console` from within a test, its hooks, or
 a suite body, including from functions in other modules, is emitted in order
 with the other events of that test, and `file` is the file of that test.
+While `process.stdout` or its `write()` method is replaced, for example by a
+mock, console output is written to it instead of being emitted as this event.
 Output written directly to `process.stdout` is only emitted when the test
 file runs in a child process, and is not guaranteed to be emitted in the same
 order as the tests are defined.
